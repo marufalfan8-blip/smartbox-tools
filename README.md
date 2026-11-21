@@ -194,6 +194,7 @@ Scripts run **on the phone, in Termux**, not in the chroot.
 | File | Purpose | Usage |
 |---|---|---|
 | `ubuntu` | Enter the Ubuntu chroot: check mounts, `su` + `chroot`, auto-unmount on exit. This is the entry point for running `ubt.py` on the phone. | `./ubuntu`, then `exit` to leave |
+| `chroot-mount.sh` | Mounts `/proc`, `/sys`, `/dev`, `/tmp` into the chroot and copies `resolv.conf`. Called automatically by `ubuntu` — copy it to your Termux home (`$TERMUX_HOME/chroot-mount.sh`) before running `./ubuntu`. | Called by `ubuntu`; can also be run manually |
 
 All paths use environment variables — configure them via `.env.example` first.
 
