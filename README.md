@@ -215,6 +215,11 @@ cd ubt
 python3 ubt.py --img /path/to/aml_upgrade_package.img --no-erase-bootloader --reset
 ```
 
+Other `ubt.py` options (from `--help`): `--wipe {no,normal,all}` (destructive —
+`all` erases all partitions), `--password FILE` (for password-locked bootloaders).
+The command above uses the tested defaults: no bootloader erase, normal wipe,
+reset after success.
+
 `optimus.py` and `pyamlboot.py` were modified with the following fixes:
 - `wait_device()` timeout raised to 90 seconds (the 10s default was too short when the box re-enumerates after erasing the bootloader)
 - `wait_device(identify=False)` in `do_burn()` (some newer bootloaders do not answer `REQ_IDENTIFY_HOST`)
