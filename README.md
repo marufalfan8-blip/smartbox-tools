@@ -257,6 +257,11 @@ set -a; . ./.env; set +a
 `GW`, `KF`) — see `.env.example`. These are **device/firmware-specific addresses**;
 never guess them on a device you care about.
 
+**If the box never appears as `1b8e:c003`:** you cannot flash with `ubt/`.
+Recheck the OTG cable (data-capable), the ADB connection, and the burn-mode
+entry path in Quick start. On this box, a PC-based Amlogic tool was the fallback
+for a box already on Android 9.
+
 ## Research status
 - ✅ Flashing Android 9 (atvXperience) from the phone via `ubt.py` — **successful**
 - ⚠️ `utgard/`: the write primitive works, but SLOT_PHYS is hard to find and the GPU wedges easily — not stable
