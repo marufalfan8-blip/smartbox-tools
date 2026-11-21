@@ -35,8 +35,7 @@ and `termux/chroot-mount.sh` copied to your Termux home.
    ```bash
    python3 -c "import usb.core; print(bool(usb.core.find(idVendor=0x1b8e,idProduct=0xc003)))"
    ```
-   must print `True`. (Android 9 boxes: this path is unverified — see step 3
-   notes in **Quick usage**.)
+   must print `True`. (Android 9 boxes: this path is unverified — see **Notes**.)
 4. **Flash:**
    ```bash
    cd ubt && python3 ubt.py --img ROM.img --no-erase-bootloader --reset
