@@ -28,6 +28,8 @@ using the USB OTG port and a Python burn tool running inside a chroot.
 2. **Make sure ADB sees the box first:** `adb devices` must show a `<serial> device`
    entry. If it is empty, the USB node may need a symlink (`/dev/bus/usb/...`
    from the host) or use network ADB: `adb connect <BOX_IP>:5555`.
+   If it shows `offline` or `authorizing`, accept the "Allow USB debugging?"
+   dialog on the TV and re-check (`adb kill-server && adb start-server`).
 3. **Put the box in burn mode `1b8e:c003`:** with the box still running its
    original Android 7 (this is the state where `adb reboot fastboot` was verified
    to reach burn mode), run `adb reboot fastboot` — **from inside the chroot**
