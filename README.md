@@ -147,14 +147,15 @@ an arbitrary physical-memory write primitive. **Not stable** — see Research st
 Firmware-specific addresses (`SLOT_PHYS`, `KLN_ADDR`) are **required** and must
 be derived for your exact build — see `.env.example`.
 
-### `chroot/` — Ubuntu chroot environment helpers
-Scripts run **inside the Ubuntu chroot**, not on Android/Termux. Only tools that
-support the box-flashing workflow are kept here.
+### `chroot/` — scripts that run inside the Ubuntu chroot
+Not Termux-side scripts — these run *inside* the chroot. Two small utilities:
+one fixes the chroot after a reboot; the other is an **optional** SD-card image
+writer (the verified flash path used `ubt/` over USB, not an SD card).
 
 | File | Purpose | Usage |
 |---|---|---|
 | `chroot-mount-restore.sh` | Re-mount `/proc`, `/sys`, `/tmp` after a reboot (mounts are lost because the service starts via plain `chroot`, not the launcher). | `source chroot-mount-restore.sh`; for auto-mount at login, add `[ -n "$PS1" ] && . /path/to/chroot/chroot-mount-restore.sh` to `~/.bashrc` / `.zshrc` |
-| `dd-throttled.py` | Write an image to SD at 2 MB/s — avoids heat and voltage drops during long `dd` writes. **Double-check `DD_DST`** — writing to the wrong block device destroys data. | `DD_SRC=img DD_DST=/dev/block/sdX python3 dd-throttled.py` |
+| `dd-throttled.py` | **Optional** — write an image to an SD card at 2 MB/s (avoids heat/voltage drops). Not needed for the USB flash path. **Double-check `DD_DST`** — wrong device destroys data. | `DD_SRC=img DD_DST=/dev/block/sdX python3 dd-throttled.py` |
 
 ### `dcow/` — DirtyCow (CVE-2016-5195) research
 Classic Android root PoC over ADB. **Unstable on the tested firmware** — keep it as
