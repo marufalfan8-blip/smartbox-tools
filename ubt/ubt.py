@@ -42,7 +42,7 @@ def main():
     parser.add_argument('--no-erase-bootloader',
                         action='store_true',
                         default=False,
-                        help='Erase bootloader')
+                        help='Skip the bootloader-erase step (safer; default in the tested command)')
     parser.add_argument('--wipe',
                         type=lambda x: WipeFormat[x],
                         choices=list(WipeFormat),
