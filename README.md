@@ -1,14 +1,10 @@
 # smartbox-tools
 
-A collection of tools and scripts for customizing **Amlogic smart TV boxes
-(S905X / p212)** from an Android phone + Ubuntu chroot.
+A collection of tools and scripts for customizing **Amlogic smart TV boxes (S905X / p212)** from an Android phone + Ubuntu chroot.
 
-Focus: flashing via USB Burn Mode, root research, and chroot/Termux environment
-helpers.
+Focus: flashing via USB Burn Mode, root research, and chroot/Termux environment helpers.
 
-**Why this exists:** most guides say you need a Windows PC + Amlogic USB Burning
-Tool to flash these boxes. These tools do it **from the phone only** — no PC —
-using the USB OTG port and a Python burn tool running inside a chroot.
+**Why this exists:** most guides say you need a Windows PC + Amlogic USB Burning Tool to flash these boxes. These tools do it **from the phone only** — no PC — using the USB OTG port and a Python burn tool running inside a chroot.
 
 > Note: this is a collection of research tools. It does **not** include firmware, APKs, or backup files.
 
