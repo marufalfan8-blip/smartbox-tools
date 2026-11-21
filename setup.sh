@@ -24,9 +24,9 @@ else
   echo "MISS  pyusb (run: ./setup.sh --install)" >&2
 fi
 if python3 -c 'import pyamlboot' >/dev/null 2>&1; then
-  echo "OK    pyamlboot (pip package, used by pyamlboot/ scripts)"
+  echo "OK    pyamlboot (pip package, used by bootrom-scripts/)"
 else
-  echo "MISS  pyamlboot (optional; only for pyamlboot/ scripts)" >&2
+  echo "MISS  pyamlboot (optional; only for bootrom-scripts/)" >&2
 fi
 
 if [ -n "${CHROOT_DIR:-}" ] && [ ! -d "$CHROOT_DIR" ]; then

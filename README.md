@@ -99,15 +99,15 @@ See `.env.example` for the path variables used by the helper scripts.
 ## Layout
 
 ```
-ubt/            USB Burn Tool — the actual ROM flashing tool (main tool)
-pyamlboot/      standalone bootROM tools (RAM-boot, SoC ID)
-chroot/         scripts that run inside the Ubuntu chroot
-termux/         scripts that run on the phone (Termux)
-research/       archived experiments — NOT production paths
-  utgard/       Utgard LPE root research (Mali-400 GPU write primitive)
-  dcow/         DirtyCow CVE-2016-5195 PoC
-smartbox        single entrypoint: check / flash / rescue / socid
-setup.sh        copy the Termux mount helper and check dependencies
+ubt/              USB Burn Tool — the actual ROM flashing tool (main tool)
+bootrom-scripts/  standalone bootROM scripts (RAM-boot, SoC ID)
+chroot/           scripts that run inside the Ubuntu chroot
+termux/           scripts that run on the phone (Termux)
+research/         archived experiments — NOT production paths
+  utgard/         Utgard LPE root research (Mali-400 GPU write primitive)
+  dcow/           DirtyCow CVE-2016-5195 PoC
+smartbox          single entrypoint: check / flash / rescue / socid
+setup.sh          copy the Termux mount helper and check dependencies
 requirements.txt  Python dependencies
 ```
 
@@ -178,7 +178,7 @@ make root      # build -> push to device -> run
 make clean
 ```
 
-### `pyamlboot/` — Standalone Amlogic bootROM tools
+### `bootrom-scripts/` — Standalone Amlogic bootROM scripts
 Pure-Python tools that talk to the Amlogic bootROM while the device is in
 **burn mode `1b8e:c003`**. Two scripts:
 
@@ -267,7 +267,7 @@ Only what the tool you actually use needs — most are optional.
 | Tool | Needs |
 |---|---|
 | `ubt/` (flashing — the main tool) | Python 3 in the chroot with `pyusb` + `libusb-1.0`; `adb`/`fastboot` to reach burn mode |
-| `pyamlboot/` (RAM-boot / SoC ID) | Same Python 3 + `pyusb`/`libusb-1.0` |
+| `bootrom-scripts/` (RAM-boot / SoC ID) | Same Python 3 + `pyusb`/`libusb-1.0` |
 | `research/utgard/` (archived, build C) | Cross compiler `aarch64-linux-gnu-gcc` / `arm-linux-gnueabihf-gcc` |
 | `research/dcow/` (archived, build C) | **Android NDK** (`ndk-build`) + `adb` — see `research/dcow/Makefile` |
 | All of it on-device | Termux on the rooted phone + Ubuntu chroot (`CHROOT_DIR`)
@@ -353,13 +353,13 @@ reuse.
 |---|---|
 | `ubt/` (SaluteDevices Amlogic tools) | mostly `GPL-2.0 OR MIT`; `ubt/pyamlboot/pyamlboot.py` is `Apache-2.0 OR MIT` |
 | `research/dcow/` (DirtyCow PoC + image packer) | `GPL-2.0 OR MIT` |
-| `pyamlboot/` (standalone scripts) | `Apache-2.0 OR MIT` |
+| `bootrom-scripts/` (standalone scripts) | `Apache-2.0 OR MIT` |
 | `chroot/`, `termux/`, `research/utgard/` (scripts and C sources written for this repo), `chroot/dd-throttled.py`, `smartbox`, `setup.sh` | `MIT` — see [LICENSE](LICENSE) |
 | `__init__.py` package markers | provided as-is for research |
 
 `ubt/pyamlboot/` is the single bundled pyamlboot package (with the stability
 fixes used by the successful flash). The old byte-identical copies formerly in
 `dcow/` were removed; `research/dcow/aml_image_packer.py` imports from `ubt/` via a path
-bootstrap. The `pyamlboot/` folder at the root holds two **scripts** that use the
+bootstrap. The `bootrom-scripts/` folder holds two **scripts** that use the
 pip-installed package — it is not a second package copy. Do not assume one
 license covers the whole repository.
