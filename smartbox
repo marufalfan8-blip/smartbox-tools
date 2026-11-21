@@ -3,7 +3,12 @@
 # Single entrypoint for the smartbox-tools flash workflows. Run from anywhere.
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Resolve symlinks so a link on PATH still finds the repo, not the link's dir.
+self="${BASH_SOURCE[0]}"
+if command -v readlink >/dev/null 2>&1; then
+  self="$(readlink -f "$self" 2>/dev/null || printf '%s' "$self")"
+fi
+ROOT="$(cd "$(dirname "$self")" && pwd)"
 cd "$ROOT"
 
 if [ -f .env ]; then

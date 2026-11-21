@@ -262,6 +262,16 @@ dropouts — it never erases the bootloader. `./setup.sh` copies
 `termux/chroot-mount.sh` into `$TERMUX_HOME` and checks dependencies;
 `./setup.sh --install` also installs `requirements.txt`.
 
+To call it from anywhere in the chroot without `cd`-ing into the repo, symlink
+it onto PATH. The repo stays the single source of truth — the link is not a copy:
+
+```bash
+ln -s "$PWD/smartbox" /usr/local/bin/smartbox   # run as root inside the chroot
+smartbox check                                  # works from any directory
+```
+
+No Python package, no build step, no publishing — just a symlink.
+
 ## Dependencies
 Software to install (the hardware requirements are in Device requirements above).
 Only what the tool you actually use needs — most are optional.
