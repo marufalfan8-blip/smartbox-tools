@@ -459,7 +459,9 @@ def get_device_eps(dev):
     return [epout, epin]
 
 
-def wait_for_device(last_dev_addr):
+def wait_for_device(last_dev_addr, timeout=120.0):
+    start = time.monotonic()
+
     while True:
         dev = usb.core.find(idVendor=AMLOGIC_VENDOR_ID,
                             idProduct=AMLOGIC_PRODUCT_ID, backend=None)
@@ -471,6 +473,13 @@ def wait_for_device(last_dev_addr):
             if dev.address != last_dev_addr:
                 logging.info('Device found')
                 return dev
+
+        if time.monotonic() - start >= timeout:
+            raise TimeoutError(
+                'Device did not re-enumerate within '
+                f'{timeout:.0f}s (last address {last_dev_addr}). '
+                'Check the USB cable/OTG adapter and whether the box is '
+                'still in burn mode.')
 
         logging.info('Waiting for the device...')
         time.sleep(1)
@@ -524,8 +533,9 @@ def do_adnl_burn(reset, erase_code, aml_img):
         raise
 
     if dev is None:
-        logging.info('Device not found')
-        return
+        raise RuntimeError(
+            'Device not found in burn mode (1b8e:c003). Check the USB '
+            'cable/OTG adapter and that the box is in burn mode.')
 
     dev_addr_rom_stage = dev.address
 

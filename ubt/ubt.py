@@ -42,15 +42,18 @@ def main():
     parser.add_argument('--no-erase-bootloader',
                         action='store_true',
                         default=False,
-                        help='Skip the bootloader-erase step (safer; default in the tested command)')
+                        help='Skip the bootloader-erase step (OPTIMUS images only; '
+                             'safer, used by the tested command)')
     parser.add_argument('--wipe',
                         type=lambda x: WipeFormat[x],
                         choices=list(WipeFormat),
                         default='normal',
-                        help='Destroy all partitions')
+                        help='Wipe mode: no, normal, or all '
+                             '(all destroys every partition)')
     parser.add_argument('--password',
                         type=argparse.FileType('rb'),
-                        help='Unlock usb mode using password file provided')
+                        help='Unlock usb mode using password file provided '
+                             '(OPTIMUS images only)')
     parser.add_argument('--version', action='version', version=__version__)
 
     args = parser.parse_args()
@@ -63,10 +66,29 @@ def main():
     except ValueError:
         adnl = False
 
-    if adnl:
-        do_adnl_burn(args.reset, args.wipe.value, aml_img)
-    else:
-        do_optimus_burn(args, aml_img)
+    try:
+        if adnl:
+            # The ADNL flow has no separate bootloader-erase step and does not
+            # use a password. Reject these flags instead of silently ignoring
+            # them: a user must not believe they are in the safer mode when
+            # the flag has no effect.
+            if args.no_erase_bootloader:
+                parser.error(
+                    '--no-erase-bootloader is only supported for OPTIMUS '
+                    'images; this image uses the ADNL protocol, which has no '
+                    'separate bootloader-erase step. Remove the flag.')
+            if args.password:
+                parser.error(
+                    '--password is only supported for OPTIMUS images; '
+                    'this image uses the ADNL protocol.')
+            do_adnl_burn(args.reset, args.wipe.value, aml_img)
+        else:
+            do_optimus_burn(args, aml_img)
+    except (RuntimeError, TimeoutError) as exc:
+        logging.error('%s', exc)
+        return 2
+
+    return 0
 
 
 if __name__ == '__main__':

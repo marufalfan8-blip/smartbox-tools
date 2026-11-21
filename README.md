@@ -210,7 +210,10 @@ python3 ubt.py --img /path/to/aml_upgrade_package.img --no-erase-bootloader --re
 ```
 
 Other `ubt.py` options (from `--help`): `--wipe {no,normal,all}` (destructive —
-`all` erases all partitions), `--password FILE` (for password-locked bootloaders).
+`all` erases all partitions), `--password FILE` (for password-locked
+bootloaders), `--no-erase-bootloader` (skip the separate bootloader-erase step).
+`--password` and `--no-erase-bootloader` apply to **OPTIMUS images only**; the
+tool rejects them for ADNL images instead of silently ignoring them.
 The command above uses the tested defaults: no bootloader erase, normal wipe,
 reset after success.
 
@@ -247,7 +250,10 @@ intentional, not a configurable option.
 
 ### Configuration
 Device-specific paths were replaced with environment variables (see `.env.example`).
-Copy it, adjust the values for your device, and source it before running helpers:
+`TERMUX_PREFIX` (default `/data/data/com.termux/files/usr`) is where
+`chroot-mount.sh` reads Termux's `resolv.conf`; `TERMUX_HOME` is where the
+mount helper is copied. Copy `.env.example`, adjust the values for your device,
+and source it before running helpers:
 
 ```bash
 set -a; . ./.env; set +a
