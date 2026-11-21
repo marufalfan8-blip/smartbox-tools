@@ -1,4 +1,5 @@
 #!/system/bin/sh
+# SPDX-License-Identifier: MIT
 #
 # Runs as root because the kernel's core-dump pipe helper, configured via
 # core_pattern by run.sh, is spawned with full privileges.  It has no usable

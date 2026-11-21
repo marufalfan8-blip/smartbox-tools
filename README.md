@@ -151,7 +151,7 @@ writer (the verified flash path used `ubt/` over USB, not an SD card).
 | File | Purpose | Usage |
 |---|---|---|
 | `chroot-mount-restore.sh` | Re-mount `/proc`, `/sys`, `/tmp` after a reboot (mounts are lost because the service starts via plain `chroot`, not the launcher). | `source chroot-mount-restore.sh`; for auto-mount at login, add `[ -n "$PS1" ] && . /path/to/chroot/chroot-mount-restore.sh` to `~/.bashrc` / `.zshrc` |
-| `dd-throttled.py` | **Optional** — write an image to an SD card at 2 MB/s (avoids heat/voltage drops). Not needed for the USB flash path. **Double-check `DD_DST`** — wrong device destroys data. | `DD_SRC=img DD_DST=/dev/block/sdX python3 dd-throttled.py` |
+| `dd-throttled.py` | **Optional** — write an image to an SD card at 2 MB/s (avoids heat/voltage drops). Not needed for the USB flash path. Requires `CONFIRM=yes` and a block device as `DD_DST`; it also refuses an image larger than the device. **Double-check `DD_DST`** — wrong device destroys data. | `DD_SRC=img DD_DST=/dev/block/sdX CONFIRM=yes python3 dd-throttled.py` |
 
 ### `dcow/` — DirtyCow (CVE-2016-5195) research
 Classic Android root PoC over ADB. **Unstable on the tested firmware** — keep it as
@@ -318,16 +318,19 @@ The two root paths are **archived failures**, not recommended methods — they a
 included so the research is not lost. The flashing path is the one that works.
 
 ## License
-This repo is a collection of third-party research tools. There is **no single
-repo-wide license** — each file keeps its original one. Check the SPDX header in
-each source file before reuse.
+Files written for this repo carry `SPDX-License-Identifier: MIT` and are covered
+by [LICENSE](LICENSE). Third-party components keep their original licenses —
+there is no single repo-wide license. Check the SPDX header in each file before
+reuse.
 
 | Group | License (from SPDX headers) |
 |---|---|
 | `ubt/` (SaluteDevices Amlogic tools) | mostly `GPL-2.0 OR MIT`; `ubt/pyamlboot/pyamlboot.py` is `Apache-2.0 OR MIT` |
 | `dcow/` (DirtyCow PoC + image packer) | `GPL-2.0 OR MIT` |
 | `pyamlboot/` (standalone) | `Apache-2.0 OR MIT` |
-| `chroot/dd-throttled.py` (written for this repo) | `MIT` |
-| `__init__.py` package markers, shell scripts without a header | provided as-is for research |
+| `chroot/`, `termux/`, `utgard/` (scripts and C sources written for this repo), `chroot/dd-throttled.py` | `MIT` — see [LICENSE](LICENSE) |
+| `__init__.py` package markers | provided as-is for research |
 
-Do not assume one license covers the whole repository.
+`amlimage.py` is duplicated byte-for-byte in `dcow/`, `dcow/pyamlboot/`, and
+`ubt/pyamlboot/` so each tool can be used standalone. Do not assume one license
+covers the whole repository.

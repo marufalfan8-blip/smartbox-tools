@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: MIT */
 /* crash_for_core - raise RLIMIT_CORE and die with SIGSEGV so the kernel runs
  * the core_pattern pipe helper. */
 #include <sys/resource.h>

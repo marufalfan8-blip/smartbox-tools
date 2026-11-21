@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: MIT */
 /*
  * gpu_arb_write - write a 128-byte block of a repeated 8-byte value to an
  *                 arbitrary physical address, using the Mali-400 (Utgard)

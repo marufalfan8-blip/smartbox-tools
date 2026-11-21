@@ -1,4 +1,5 @@
 #!/system/bin/sh
+# SPDX-License-Identifier: MIT
 # If SLOT_PHYS=0x20df7a0 is correct and KLN_ADDR=0xffffffc00111e5d0 is right,
 # kallsyms_lookup_name("memcpy") must return a real kernel address.
 D=/data/local/tmp

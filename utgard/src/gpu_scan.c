@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: MIT */
 /*
  * gpu_scan - in-process probe loop for the Utgard arbitrary-physical-write
  *            primitive.

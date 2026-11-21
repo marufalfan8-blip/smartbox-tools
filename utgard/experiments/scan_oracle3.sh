@@ -1,4 +1,5 @@
 #!/system/bin/sh
+# SPDX-License-Identifier: MIT
 # Safe scan v3: timeout -k forces SIGKILL even if gaw64 wedges in kernel.
 D=/data/local/tmp
 GW=$D/gaw64

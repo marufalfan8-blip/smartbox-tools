@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: MIT */
 /*
  * kfunc - call an arbitrary kernel function from a 64-bit process by abusing
  *         unused entries of sys_call_table.

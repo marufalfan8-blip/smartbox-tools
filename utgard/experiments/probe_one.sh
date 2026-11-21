@@ -1,4 +1,5 @@
 #!/system/bin/sh
+# SPDX-License-Identifier: MIT
 # One-shot probe: write KLN to a single candidate slot, then resolve memcpy.
 # Usage: probe_one.sh <slot_phys_hex> [kln_hex]
 # ALWAYS run on a freshly rebooted box (orphan gaw64 = 0).

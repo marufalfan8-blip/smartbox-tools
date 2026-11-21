@@ -1,4 +1,5 @@
 #!/system/bin/sh
+# SPDX-License-Identifier: MIT
 # SAFE scan for sys_call_table[244]:
 # 1) write canary payload (movz x0,#0x1234; ret) to persistent_ram page (phys 0x07300000)
 # 2) for each candidate page, write POINTER to that page into cand+0x7a0 (slot 244)

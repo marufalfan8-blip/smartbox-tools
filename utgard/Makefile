@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 # Cross-compilers (override on the command line if yours are named differently)
 CC32 ?= arm-linux-gnueabihf-gcc
 CC64 ?= aarch64-linux-gnu-gcc

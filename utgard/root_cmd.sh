@@ -1,4 +1,5 @@
 #!/system/bin/sh
+# SPDX-License-Identifier: MIT
 # INTENDED FOR THE ANDROID DEVICE (not the chroot). Runs as root via roothelper.sh.
 # Example root payload run by the Utgard chain (see run.sh / roothelper.sh).
 # Replace with your own command. Everything writes to /data/local/tmp.

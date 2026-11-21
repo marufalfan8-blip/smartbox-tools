@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: MIT */
 /* Probe ION ioctl numbers on Amlogic 3.14: try ALLOC nr 0..7 with struct
  * variants, report which one succeeds. Read-only-ish: allocates small buffers. */
 #define _GNU_SOURCE

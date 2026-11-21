@@ -1,4 +1,5 @@
 #!/system/bin/sh
+# SPDX-License-Identifier: MIT
 #
 # run.sh - drive the full Utgard LPE chain on a rooted Amlogic box.
 #

@@ -1,4 +1,5 @@
 #!/system/bin/sh
+# SPDX-License-Identifier: MIT
 # Retry the two addresses that SURVIVED a write before, now with a VALID
 # kernel-function canary (kallsyms_lookup_name guess) and a valid string arg.
 D=/data/local/tmp

@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: MIT */
 /* kread - 3-argument caller for the physmap canary payload.
  *
  * With sys_call_table[244] pointing at a page whose first bytes are

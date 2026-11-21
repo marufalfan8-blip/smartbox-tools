@@ -1,4 +1,5 @@
 #!/bin/bash
+# SPDX-License-Identifier: MIT
 # Mount host filesystems into the Ubuntu chroot (run from Termux via `su`).
 # Set CHROOT_DIR to your chroot path (see .env.example).
 set -e

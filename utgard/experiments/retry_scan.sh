@@ -1,4 +1,5 @@
 #!/system/bin/sh
+# SPDX-License-Identifier: MIT
 # Retry SLOT_PHYS scan with a VALID kernel-function canary.
 # Previous attempts used 0xffffffc007300000 (physmap alias) or RET machine code
 # -> wrong, caused oops when the slot was actually hit.

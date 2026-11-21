@@ -1,4 +1,5 @@
 #!/system/bin/sh
+# SPDX-License-Identifier: MIT
 # Scan for sys_call_table[244] physical address.
 # Canary = movz x0,#0x1234 ; ret = d65f03c0d2824680 (little endian bytes: 80 46 82 d2 c0 03 5f d6)
 # gaw64 writes 128 bytes at the given phys; kfunc_new call 244 returns the canary value.

@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: MIT */
 /* Probe ION: after ALLOC, try to get a usable fd / phys via MAP, SHARE variants
  * and also test whether /dev/ion mmap of the buffer fd works. */
 #define _GNU_SOURCE

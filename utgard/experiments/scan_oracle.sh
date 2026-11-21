@@ -1,4 +1,5 @@
 #!/system/bin/sh
+# SPDX-License-Identifier: MIT
 # Scan for sys_call_table[244] using the clean kallsyms_lookup_name oracle.
 # Write KLN pointer to a candidate; if slot 244 lands in the table,
 # `kfunc_new sym memcpy` returns a real kernel address instead of -1.

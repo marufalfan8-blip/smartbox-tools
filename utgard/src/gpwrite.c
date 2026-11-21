@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: MIT */
 /*
  * gpwrite - Utgard (Mali-400) arbitrary physical 128-byte write, ion-free.
  *

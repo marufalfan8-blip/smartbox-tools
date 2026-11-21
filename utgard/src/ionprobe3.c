@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: MIT */
 /* Last ION probe: old-style structs (32-bit handle) + alt magic bytes */
 #define _GNU_SOURCE
 #include <stdio.h>

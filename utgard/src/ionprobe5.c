@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: MIT */
 /* Get phys of an ION allocation: try mmap of ion fd and dma-buf fd,
  * then read /proc/self/pagemap for the mapped VA (may be EPERM), and
  * also try the Mali GPU's own MEM_QUERY if available. */

@@ -1,4 +1,5 @@
 #!/system/bin/sh
+# SPDX-License-Identifier: MIT
 # Safe scan: every gaw64 call has a timeout, so a wedged GPU can't hang forever.
 # Oracle: write KLN pointer to candidate slot; `kfunc_new sym memcpy` returns a
 # real kernel address if slot 244 landed in sys_call_table, else -1.

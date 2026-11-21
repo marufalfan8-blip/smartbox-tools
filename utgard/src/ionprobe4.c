@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: MIT */
 /* Probe ION_IOC_CUSTOM: find nr + cmd that returns a physical address.
  * Uses fd from ION_SHARE (nr=4, size8). */
 #define _GNU_SOURCE

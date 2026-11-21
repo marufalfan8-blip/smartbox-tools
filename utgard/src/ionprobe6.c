@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: MIT */
 /* Try direct ION ioctl nr 0..15 with phys struct {uint32 fd,addr,size} */
 #define _GNU_SOURCE
 #include <stdio.h>

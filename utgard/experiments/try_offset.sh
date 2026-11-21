@@ -1,4 +1,5 @@
 #!/system/bin/sh
+# SPDX-License-Identifier: MIT
 D=/data/local/tmp
 GW=$D/gaw64
 KF=$D/kfunc_new
