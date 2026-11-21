@@ -130,16 +130,44 @@ def parse_cmdline(boards):
 
     return args
 
-if __name__ == '__main__':
-    # Try to get boot files from the python package, or from local tree
-    # Python 3.14 + setuptools 84 removed pkg_resources; fall back to local tree.
-    fpath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "files")
+def locate_board_files():
+    """Find the board config directory shipped with the pyamlboot package.
+
+    setuptools 84 removed pkg_resources, so the old lookup silently fell back
+    to a local files/ dir that is not part of this repo. Search runtime paths
+    instead; a local files/ dir still wins if the user supplied one.
+    """
+    here = os.path.dirname(os.path.realpath(__file__))
+    candidates = [os.path.join(here, "files")]
     try:
-        import pkg_resources
-        dist = pkg_resources.get_distribution('pyamlboot')
-        fpath = dist.get_resource_filename(pkg_resources.ResourceManager(), "files")
+        import importlib.util
+        spec = importlib.util.find_spec("pyamlboot")
+        if spec and spec.submodule_search_locations:
+            pkg_dir = os.path.dirname(next(iter(spec.submodule_search_locations)))
+            candidates.append(os.path.join(pkg_dir, "files"))
     except Exception:
         pass
+    try:
+        import sysconfig
+        for key in ("purelib", "platlib"):
+            base = sysconfig.get_paths().get(key)
+            if base:
+                candidates.append(os.path.join(base, "files"))
+    except Exception:
+        pass
+    for path in candidates:
+        if os.path.isdir(path):
+            return path
+    return candidates[0]
+
+
+if __name__ == '__main__':
+    fpath = locate_board_files()
+    if not os.path.isdir(fpath):
+        print("ERROR: board files directory not found. Install pyamlboot "
+              "(pip install pyamlboot) or place a files/ dir next to boot.py.",
+              file=sys.stderr)
+        sys.exit(1)
     boards = list_boards(fpath)
     args = parse_cmdline(boards)
     usb = BootUSB(args.board, fpath, args.upath)

@@ -188,9 +188,11 @@ Pure-Python tools that talk to the Amlogic bootROM while the device is in
 | | **Note:** this folder holds only 2 scripts — the `pyamlboot` Python package itself (`pyamlboot.py`, board `files/`) is imported from the installed distribution, not bundled here. | |
 | `socid.py` | Read the SoC ID / chip identity from the bootROM. | `python3 socid.py` (device must be in burn mode) |
 
-Requires `pyusb` + `libusb-1.0`. **Note:** `boot.py` loads board config files from
-the `pyamlboot` Python package resources (`files/` in the installed distribution),
-so install pyamlboot itself (`pip install pyamlboot`) rather than running this
+Requires `pyusb` + `libusb-1.0`. **Note:** `boot.py` looks for board config files
+in this order: a local `files/` dir, next to the installed `pyamlboot` package,
+then the standard `site-packages` locations. It no longer uses `pkg_resources`
+(removed in setuptools 84) and exits with a clear error when no `files/` dir is
+found. Install pyamlboot (`pip install pyamlboot`) rather than running this
 script completely standalone. For a full eMMC flash, use `ubt/` instead — not this folder.
 
 ### `termux/` — scripts that run on the phone (Termux)
