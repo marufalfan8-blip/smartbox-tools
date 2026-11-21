@@ -24,38 +24,29 @@ using the USB OTG port and a Python burn tool running inside a chroot.
 
 ## Quick start (the 4 steps that actually worked)
 
-1. **Enter the chroot on the phone (from Termux):** copy
-   `termux/chroot-mount.sh` to your Termux home (`$HOME/chroot-mount.sh`), then
-   run `./termux/ubuntu`. Set `CHROOT_DIR` first (see `.env.example`).
-2. **Make sure ADB sees the box first:** `adb devices` must show a `<serial> device`
-   entry. If it is empty, the USB node may need a symlink (`/dev/bus/usb/...`
-   from the host) or use network ADB: `adb connect <BOX_IP>:5555`.
-   If it shows `offline` or `authorizing`, accept the "Allow USB debugging?"
-   dialog on the TV and re-check (`adb kill-server && adb start-server`).
-3. **Put the box in burn mode `1b8e:c003`:** with the box still running its
-   original Android 7 (this is the state where `adb reboot fastboot` was verified
-   to reach burn mode), run `adb reboot fastboot` — **from inside the chroot**
-   (USB OTG connected).
-   Verify with:
+Prerequisite: `CHROOT_DIR` set and `.env` sourced (see **Notes → Configuration**),
+and `termux/chroot-mount.sh` copied to your Termux home.
+
+1. **Enter the chroot:** from Termux, run `./termux/ubuntu`.
+2. **Confirm ADB sees the box:** `adb devices` must show `<serial> device`
+   (if empty/offline/authorizing, see **Notes → If the box never enters burn mode**).
+3. **Enter burn mode `1b8e:c003`:** with the box still on its original Android 7,
+   run `adb reboot fastboot` from inside the chroot, then verify:
    ```bash
    python3 -c "import usb.core; print(bool(usb.core.find(idVendor=0x1b8e,idProduct=0xc003)))"
    ```
-   It must print `True` before continuing. (On the tested box, holding the reset
-   button only reached ADB `18d1:4ee7`, not burn mode — so use this path.)
-   If the box is **already on Android 9**, this path was not verified here —
-   entering burn mode from that state may need the box's hardware recovery
-   method or a PC-based Amlogic tool.
-4. **Flash (still inside the chroot):**
+   must print `True`. (Android 9 boxes: this path is unverified — see step 3
+   notes in **Quick usage**.)
+4. **Flash:**
    ```bash
    cd ubt && python3 ubt.py --img ROM.img --no-erase-bootloader --reset
    ```
 
-All four steps happen on the phone — no PC. For the detailed version (tool
-modifications, `ubt.py` options, how the box is prepared), see **Quick usage**
-below. The rest of the README is background and research notes.
+All on the phone — no PC. For details (tool modifications, `ubt.py` options),
+see **Quick usage**; for problems, see **Notes**.
 
-> ⚠️ **Before you actually flash:** read the risk warnings in the next section.
-> A wrong ROM or an interrupted flash can permanently brick the box.
+> ⚠️ **Before flashing:** read the risk warnings next — a wrong ROM or an
+> interrupted flash can permanently brick the box.
 
 ## ⚠️ Read this before using anything
 
