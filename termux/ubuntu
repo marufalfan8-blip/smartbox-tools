@@ -4,8 +4,17 @@ ROOT="${CHROOT_DIR:-/path/to/chroot}"
 MOUNT="${TERMUX_HOME:-/data/data/com.termux/files/home}/chroot-mount.sh"
 BASH=/data/data/com.termux/files/usr/bin/bash
 
+if [ ! -d "$ROOT" ]; then
+  echo "ERROR: chroot directory '$ROOT' does not exist. Set CHROOT_DIR." >&2
+  exit 1
+fi
+if [ ! -f "$MOUNT" ]; then
+  echo "ERROR: $MOUNT not found. Copy termux/chroot-mount.sh to your Termux home." >&2
+  exit 1
+fi
+
 if ! su -c "mountpoint -q $ROOT/proc"; then
-  su -c "$BASH $MOUNT" || { echo "Gagal mount"; exit 1; }
+  su -c "$BASH $MOUNT" || { echo "ERROR: failed to mount chroot filesystems" >&2; exit 1; }
 fi
 
 
