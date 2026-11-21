@@ -243,6 +243,11 @@ Only needed for the tool you actually use — most are optional.
 | `dcow/` (root research, build C) | **Android NDK** (`ndk-build`) + `adb` — see `dcow/Makefile` |
 | All of it on-device | Termux on the rooted phone + Ubuntu chroot (`CHROOT_DIR`)
 
+Python dependencies can be installed with `pip install pyusb` (the only Python
+package the current tools need). The C sources and root scripts use
+`/data/local/tmp` on the **Android device** as their scratch path — that is
+intentional, not a configurable option.
+
 ## Notes
 
 Device-specific paths have been replaced with environment variables (see `.env.example`).
