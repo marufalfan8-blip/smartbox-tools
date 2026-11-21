@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  syntax:
+    name: Syntax and lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Python syntax
+        run: |
+          set -euo pipefail
+          mapfile -d '' files < <(git ls-files -z '*.py')
+          python3 -m py_compile "${files[@]}"
+
+      - name: Shell syntax
+        run: |
+          set -euo pipefail
+          mapfile -d '' files < <(git ls-files -z '*.sh' 'termux/ubuntu')
+          for f in "${files[@]}"; do
+            bash -n "$f"
+          done
+
+      - name: ShellCheck (errors only)
+        run: |
+          set -euo pipefail
+          if ! command -v shellcheck >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y shellcheck
+          fi
+          # Archived experiments are syntax-checked above but excluded here:
+          # they are research-only and use Android mksh idioms that ShellCheck
+          # cannot model.
+          mapfile -d '' files < <(
+            git ls-files -z 'termux/*.sh' 'termux/ubuntu' 'chroot/*.sh' 'utgard/*.sh' \
+              ':(exclude)utgard/experiments/*'
+          )
+          for f in "${files[@]}"; do
+            timeout 60 shellcheck -S error "$f"
+          done

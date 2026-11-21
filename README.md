@@ -1,5 +1,7 @@
 # smartbox-tools
 
+[![CI](https://github.com/marufalfan8-blip/smartbox-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/marufalfan8-blip/smartbox-tools/actions/workflows/ci.yml)
+
 A collection of tools and scripts for customizing **Amlogic smart TV boxes (S905X / p212)** from an Android phone + Ubuntu chroot.
 
 Focus: flashing via USB Burn Mode, root research, and chroot/Termux environment helpers.
@@ -68,6 +70,11 @@ These tools were tested on one specific box; they are not a universal recipe.
 - **Root/exploit tools are research only.** `utgard/` and `dcow/` crashed the
   test box repeatedly and are **not stable**. Do not run them on a device you
   cannot afford to lose.
+- **`utgard/roothelper.sh` is a backdoor by design.** It can install a
+  setuid-root `su` from `/data/local/tmp/su` and can enable **adb over TCP
+  (port 5555)** if `/data/local/tmp/ENABLE_ADB_TCP` exists. adb TCP exposes
+  root access on the network. Use it only on an isolated box and follow
+  **[Cleanup after root research](#cleanup-after-root-research)** afterwards.
 - **Secure boot / password-locked devices** will refuse unsigned images. Check
   the bootloader state first; a password is required on some units.
 - **Warranty** is almost certainly void. No support, no guarantee.
@@ -130,7 +137,7 @@ an arbitrary physical-memory write primitive. **Not stable** — see Research st
 |---|---|---|
 | `src/*.c` | C sources: write primitive (`gpwrite*`, `gpu_arb_write*`), syscall helpers (`kfunc`, `kread`), SLOT_PHYS scanners (`gpu_scan*`), ION probes, and `crash_for_core.c` (triggers the core dump that runs the `core_pattern` root helper). Some files (`gpwrite-ion.c`, `ionprobe*.c`, `gpu_arb_write64.c`, `gpu_scan_slot.c`) are unused research leftovers — not built by the default `Makefile`. | Build with `make` (needs cross compiler) |
 | `run.sh` | Drives the full chain: point syscall slots at `kallsyms_lookup_name`, resolve symbols, patch SELinux, trigger a root helper via `core_pattern`. | `SLOT_PHYS=... KLN_ADDR=... ./run.sh` |
-| `roothelper.sh`, `root_cmd.sh` | Payload run as root after the chain succeeds (scripts), not compiled. | Used by `run.sh` |
+| `roothelper.sh`, `root_cmd.sh` | Payload run as root after the chain succeeds (scripts), not compiled. `roothelper.sh` can install a setuid su (if `/data/local/tmp/su` exists) and enables adb TCP only if `/data/local/tmp/ENABLE_ADB_TCP` exists; see **[Cleanup after root research](#cleanup-after-root-research)**. | Used by `run.sh` |
 | `experiments/` | Archived SLOT_PHYS scanning experiments (10 scripts, different canary strategies). **Research-only** — not part of the main chain, see `experiments/README.md`. | Reference only; do not run on a device you care about |
 
 Firmware-specific addresses (`SLOT_PHYS`, `KLN_ADDR`) are **required** and must
@@ -274,6 +281,30 @@ flash. Check, in order:
 
 For a box already on Android 9, this entry path is unverified — see the note in
 Quick start step 3 for the PC-tool fallback.
+
+### Cleanup after root research
+If `utgard/run.sh` reached stage 5 and `roothelper.sh` ran, undo its changes:
+
+1. **Disable adb over TCP** (only enabled if you created the marker):
+   ```sh
+   rm -f /data/local/tmp/ENABLE_ADB_TCP
+   setprop service.adb.tcp.port ""
+   setprop persist.adb.tcp.port ""
+   ```
+2. **Remove the setuid su** you installed (do not delete a su that shipped with
+   the device):
+   ```sh
+   mount -o rw,remount /system
+   rm -f /system/xbin/su
+   ```
+3. **Re-enable SELinux:** `setenforce 1` (verify with `getenforce`).
+4. **Reset `core_pattern`:** a reboot is the simplest and restores the default;
+   otherwise `echo core > /proc/sys/kernel/core_pattern`.
+5. **Delete the research files** from `/data/local/tmp` (binaries, scripts,
+   `root.log`, `su`), then reboot.
+
+A reboot clears the non-persistent `service.adb.tcp.port`; the `persist.*` prop
+survives until you clear it.
 
 ## Research status
 
