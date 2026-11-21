@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
 """Write an image to SD at 2 MB/s (avoids heat and voltage drops)."""
 import os, time, sys
 
