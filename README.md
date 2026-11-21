@@ -272,9 +272,15 @@ entry path in Quick start. On this box, a PC-based Amlogic tool was the fallback
 for a box already on Android 9.
 
 ## Research status
-- ✅ Flashing Android 9 (atvXperience) from the phone via `ubt.py` — **successful**
-- ⚠️ `utgard/`: the write primitive works, but SLOT_PHYS is hard to find and the GPU wedges easily — not stable
-- ⚠️ `dcow/`: unsuccessful on this firmware
+
+| Path | Result | Notes |
+|---|---|---|
+| Flash ROM from phone (`ubt/`) | ✅ **Success** | Android 9 (atvXperience) flashed end-to-end from the phone, no PC. This is the working path. |
+| Root via Utgard LPE (`utgard/`) | ⚠️ Unstable | The arbitrary physical-write primitive works, but locating `SLOT_PHYS` (`sys_call_table[244]`) was never reliable — GPU wedges and box crashes ended the attempt. Kept as a research archive, not a usable root method. |
+| Root via DirtyCow (`dcow/`) | ❌ Unsuccessful | The race never won on this firmware. Kept as reference only. |
+
+The two root paths are **archived failures**, not recommended methods — they are
+included so the research is not lost. The flashing path is the one that works.
 
 ## License
 This repo is a collection of third-party research tools. There is **no single
