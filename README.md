@@ -277,8 +277,16 @@ for a box already on Android 9.
 - ⚠️ `dcow/`: unsuccessful on this firmware
 
 ## License
-This repo is a collection of third-party research tools. Each file keeps its
-original license (SPDX headers where present — mostly GPL-2.0/MIT for the
-SaluteDevices Amlogic tools and Apache-2.0/MIT for pyamlboot). Scripts without
-an explicit header are provided as-is for research; do not assume a single
-license covers the whole repository.
+This repo is a collection of third-party research tools. There is **no single
+repo-wide license** — each file keeps its original one. Check the SPDX header in
+each source file before reuse.
+
+| Group | License (from SPDX headers) |
+|---|---|
+| `ubt/` (SaluteDevices Amlogic tools) | mostly `GPL-2.0 OR MIT`; `ubt/pyamlboot/pyamlboot.py` is `Apache-2.0 OR MIT` |
+| `dcow/` (DirtyCow PoC + image packer) | `GPL-2.0 OR MIT` |
+| `pyamlboot/` (standalone) | `Apache-2.0 OR MIT` |
+| `chroot/dd-throttled.py` (written for this repo) | `MIT` |
+| `__init__.py` package markers, shell scripts without a header | provided as-is for research |
+
+Do not assume one license covers the whole repository.
