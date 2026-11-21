@@ -18,6 +18,7 @@ Focus: flashing via USB Burn Mode, root research, and chroot/Termux environment 
 - [Layout](#layout)
 - [Folder-by-folder guide](#folder-by-folder-guide)
 - [Quick usage](#quick-usage)
+- [One-command entrypoint](#one-command-entrypoint)
 - [Dependencies](#dependencies)
 - [Notes](#notes)
 - [Research status](#research-status)
@@ -67,10 +68,10 @@ These tools were tested on one specific box; they are not a universal recipe.
 - **The phone stays in host mode the whole time.** Keep it awake, charged, and
   do not unplug the OTG cable. A dying battery or a sleeping phone interrupts
   the transfer.
-- **Root/exploit tools are research only.** `utgard/` and `dcow/` crashed the
-  test box repeatedly and are **not stable**. Do not run them on a device you
-  cannot afford to lose.
-- **`utgard/roothelper.sh` is a backdoor by design.** It can install a
+- **Root/exploit tools are research only.** `research/utgard/` and
+  `research/dcow/` crashed the test box repeatedly and are **not stable**. Do
+  not run them on a device you cannot afford to lose.
+- **`research/utgard/roothelper.sh` is a backdoor by design.** It can install a
   setuid-root `su` from `/data/local/tmp/su` and can enable **adb over TCP
   (port 5555)** if `/data/local/tmp/ENABLE_ADB_TCP` exists. adb TCP exposes
   root access on the network. Use it only on an isolated box and follow
@@ -98,12 +99,16 @@ See `.env.example` for the path variables used by the helper scripts.
 ## Layout
 
 ```
-ubt/         USB Burn Tool — the actual ROM flashing tool (main tool)
-pyamlboot/   standalone bootROM tools (RAM-boot, SoC ID)
-utgard/      Utgard LPE root research (Mali-400 GPU write primitive)
-dcow/        DirtyCow CVE-2016-5195 PoC
-chroot/      scripts that run inside the Ubuntu chroot
-termux/      scripts that run on the phone (Termux)
+ubt/            USB Burn Tool — the actual ROM flashing tool (main tool)
+pyamlboot/      standalone bootROM tools (RAM-boot, SoC ID)
+chroot/         scripts that run inside the Ubuntu chroot
+termux/         scripts that run on the phone (Termux)
+research/       archived experiments — NOT production paths
+  utgard/       Utgard LPE root research (Mali-400 GPU write primitive)
+  dcow/         DirtyCow CVE-2016-5195 PoC
+smartbox        single entrypoint: check / flash / rescue / socid
+setup.sh        copy the Termux mount helper and check dependencies
+requirements.txt  Python dependencies
 ```
 
 See the folder-by-folder guide below for purpose and usage of each.
@@ -129,9 +134,10 @@ the successful Android 9 flash from the phone.
 Run it **inside the chroot**, with the box already in burn mode `1b8e:c003`.
 See "Flash a ROM from the phone" below for the full setup.
 
-### `utgard/` — Utgard LPE root research (Mali-400 GPU write primitive)
-Research into the Mali-400 (Utgard) GPU driver bug on Android 7 Amlogic boxes:
-an arbitrary physical-memory write primitive. **Not stable** — see Research status.
+### `research/utgard/` — Utgard LPE root research (Mali-400 GPU write primitive)
+Archived research into the Mali-400 (Utgard) GPU driver bug on Android 7 Amlogic
+boxes: an arbitrary physical-memory write primitive. **Not stable** — see
+Research status. Not part of the flashing workflow.
 
 | File | Purpose | Usage |
 |---|---|---|
@@ -153,22 +159,21 @@ writer (the verified flash path used `ubt/` over USB, not an SD card).
 | `chroot-mount-restore.sh` | Re-mount `/proc`, `/sys`, `/tmp` after a reboot (mounts are lost because the service starts via plain `chroot`, not the launcher). | `source chroot-mount-restore.sh`; for auto-mount at login, add `[ -n "$PS1" ] && . /path/to/chroot/chroot-mount-restore.sh` to `~/.bashrc` / `.zshrc` |
 | `dd-throttled.py` | **Optional** — write an image to an SD card at 2 MB/s (avoids heat/voltage drops). Not needed for the USB flash path. Requires `CONFIRM=yes` and a block device as `DD_DST`; it also refuses an image larger than the device. **Double-check `DD_DST`** — wrong device destroys data. | `DD_SRC=img DD_DST=/dev/block/sdX CONFIRM=yes python3 dd-throttled.py` |
 
-### `dcow/` — DirtyCow (CVE-2016-5195) research
-Classic Android root PoC over ADB. **Unstable on the tested firmware** — keep it as
-research reference, not as a primary root path.
+### `research/dcow/` — DirtyCow (CVE-2016-5195) research
+Archived classic Android root PoC over ADB. **Unstable on the tested firmware** —
+keep it as research reference, not as a primary root path.
 
 | File | Purpose |
 |---|---|
 | `dirtycow.c`, `dcow.c`, `run-as.c` | Exploit implementations (common DirtyCow variants). |
 | `dirtycow-dbg.c`, `dcow-dbg-main.c` | Debug variants. |
 | `Makefile` | Builds via `ndk-build` with ABI/SDK detected from `adb shell getprop`. Targets: `build`, `push`, `root`, `clean` (requires a connected ADB device). |
-| `amlimage.py`, `aml_image_packer.py` | Amlogic firmware image parser/packer (from SaluteDevices, GPL-2.0/MIT). |
-| `pyamlboot/` | Local copy of the pyamlboot modules used by the exploit. |
+| `aml_image_packer.py` | Amlogic firmware image packer (from SaluteDevices, GPL-2.0/MIT). It imports `amlimage` from the single bundled copy in `ubt/pyamlboot/` (path bootstrap at the top of the file) — there is no local duplicate. |
 | `Android.mk` | NDK build script for `dirtycow` and `run-as` (referenced by `Makefile`). |
 
 Usage (requires Android NDK + `adb`):
 ```bash
-cd dcow
+cd research/dcow
 make root      # build -> push to device -> run
 make clean
 ```
@@ -236,6 +241,25 @@ reset after success.
 # inside the chroot, mounts are restored automatically by chroot-mount-restore.sh
 ```
 
+### One-command entrypoint
+
+`smartbox` wraps the common workflows. From the repo root, after `./setup.sh`
+and sourcing `.env`:
+
+```bash
+./smartbox check                                  # burn mode 1b8e:c003? (read-only)
+./smartbox flash --img ROM.img --no-erase-bootloader --reset
+./smartbox rescue --img ROM.img                   # wait for burn mode, then flash
+./smartbox socid                                  # read SoC ID from bootROM
+```
+
+`flash` passes arguments straight to `ubt/ubt.py` and falls back to `ROM_IMG`
+from `.env` when `--img` is omitted. `rescue` polls up to 60 s for the device,
+flashes with the tested defaults, and retries at most 5 times for the usual USB
+dropouts — it never erases the bootloader. `./setup.sh` copies
+`termux/chroot-mount.sh` into `$TERMUX_HOME` and checks dependencies;
+`./setup.sh --install` also installs `requirements.txt`.
+
 ## Dependencies
 Software to install (the hardware requirements are in Device requirements above).
 Only what the tool you actually use needs — most are optional.
@@ -244,12 +268,14 @@ Only what the tool you actually use needs — most are optional.
 |---|---|
 | `ubt/` (flashing — the main tool) | Python 3 in the chroot with `pyusb` + `libusb-1.0`; `adb`/`fastboot` to reach burn mode |
 | `pyamlboot/` (RAM-boot / SoC ID) | Same Python 3 + `pyusb`/`libusb-1.0` |
-| `utgard/` (root research, build C) | Cross compiler `aarch64-linux-gnu-gcc` / `arm-linux-gnueabihf-gcc` |
-| `dcow/` (root research, build C) | **Android NDK** (`ndk-build`) + `adb` — see `dcow/Makefile` |
+| `research/utgard/` (archived, build C) | Cross compiler `aarch64-linux-gnu-gcc` / `arm-linux-gnueabihf-gcc` |
+| `research/dcow/` (archived, build C) | **Android NDK** (`ndk-build`) + `adb` — see `research/dcow/Makefile` |
 | All of it on-device | Termux on the rooted phone + Ubuntu chroot (`CHROOT_DIR`)
 
-Python dependencies can be installed with `pip install pyusb` (the only Python
-package the current tools need). The C sources and root scripts use
+Python dependencies: `pip install -r requirements.txt` (or just `pip install
+pyusb`). Note that `ubt/pyamlboot/` is bundled on purpose — the pip `pyamlboot`
+package alone does not contain `optimus.py`, `amlimage.py` or `usb_backend.py`.
+The C sources and root scripts use
 `/data/local/tmp` on the **Android device** as their scratch path — that is
 intentional, not a configurable option.
 
@@ -266,7 +292,7 @@ and source it before running helpers:
 set -a; . ./.env; set +a
 ```
 
-`utgard/run.sh` also accepts firmware-specific overrides (`SLOT_PHYS`, `KLN_ADDR`,
+`research/utgard/run.sh` also accepts firmware-specific overrides (`SLOT_PHYS`, `KLN_ADDR`,
 `GW`, `KF`) — see `.env.example`. These are **device/firmware-specific addresses**;
 never guess them on a device you care about.
 
@@ -283,7 +309,7 @@ For a box already on Android 9, this entry path is unverified — see the note i
 Quick start step 3 for the PC-tool fallback.
 
 ### Cleanup after root research
-If `utgard/run.sh` reached stage 5 and `roothelper.sh` ran, undo its changes:
+If `research/utgard/run.sh` reached stage 5 and `roothelper.sh` ran, undo its changes:
 
 1. **Disable adb over TCP** (only enabled if you created the marker):
    ```sh
@@ -311,8 +337,8 @@ survives until you clear it.
 | Path | Result | Notes |
 |---|---|---|
 | Flash ROM from phone (`ubt/`) | ✅ **Success** | Android 9 (atvXperience) flashed end-to-end from the phone, no PC. This is the working path. |
-| Root via Utgard LPE (`utgard/`) | ⚠️ Unstable | The arbitrary physical-write primitive works, but locating `SLOT_PHYS` (`sys_call_table[244]`) was never reliable — GPU wedges and box crashes ended the attempt. Kept as a research archive, not a usable root method. |
-| Root via DirtyCow (`dcow/`) | ❌ Unsuccessful | The race never won on this firmware. Kept as reference only. |
+| Root via Utgard LPE (`research/utgard/`) | ⚠️ Unstable | The arbitrary physical-write primitive works, but locating `SLOT_PHYS` (`sys_call_table[244]`) was never reliable — GPU wedges and box crashes ended the attempt. Kept as a research archive, not a usable root method. |
+| Root via DirtyCow (`research/dcow/`) | ❌ Unsuccessful | The race never won on this firmware. Kept as reference only. |
 
 The two root paths are **archived failures**, not recommended methods — they are
 included so the research is not lost. The flashing path is the one that works.
@@ -326,11 +352,14 @@ reuse.
 | Group | License (from SPDX headers) |
 |---|---|
 | `ubt/` (SaluteDevices Amlogic tools) | mostly `GPL-2.0 OR MIT`; `ubt/pyamlboot/pyamlboot.py` is `Apache-2.0 OR MIT` |
-| `dcow/` (DirtyCow PoC + image packer) | `GPL-2.0 OR MIT` |
-| `pyamlboot/` (standalone) | `Apache-2.0 OR MIT` |
-| `chroot/`, `termux/`, `utgard/` (scripts and C sources written for this repo), `chroot/dd-throttled.py` | `MIT` — see [LICENSE](LICENSE) |
+| `research/dcow/` (DirtyCow PoC + image packer) | `GPL-2.0 OR MIT` |
+| `pyamlboot/` (standalone scripts) | `Apache-2.0 OR MIT` |
+| `chroot/`, `termux/`, `research/utgard/` (scripts and C sources written for this repo), `chroot/dd-throttled.py`, `smartbox`, `setup.sh` | `MIT` — see [LICENSE](LICENSE) |
 | `__init__.py` package markers | provided as-is for research |
 
-`amlimage.py` is duplicated byte-for-byte in `dcow/`, `dcow/pyamlboot/`, and
-`ubt/pyamlboot/` so each tool can be used standalone. Do not assume one license
-covers the whole repository.
+`ubt/pyamlboot/` is the single bundled pyamlboot package (with the stability
+fixes used by the successful flash). The old byte-identical copies formerly in
+`dcow/` were removed; `research/dcow/aml_image_packer.py` imports from `ubt/` via a path
+bootstrap. The `pyamlboot/` folder at the root holds two **scripts** that use the
+pip-installed package — it is not a second package copy. Do not assume one
+license covers the whole repository.

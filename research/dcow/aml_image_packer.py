@@ -7,7 +7,13 @@ __copyright__ = "Copyright (c) 2024, SaluteDevices"
 
 import os
 import sys
-from pyamlboot.amlimage import AmlImagePack
+
+# The canonical bundled pyamlboot package lives in ubt/. The old local copies
+# in dcow/ were removed to avoid three byte-identical copies drifting apart.
+sys.path.insert(0, os.path.normpath(
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'ubt')))
+
+from pyamlboot.amlimage import AmlImagePack  # noqa: E402
 
 
 if __name__ == '__main__':

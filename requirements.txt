@@ -1,0 +1,7 @@
+# For the standalone bootROM scripts in pyamlboot/ (RAM-boot, SoC ID).
+# The flashing tool uses the bundled, modified ubt/pyamlboot/ package instead,
+# so installing this package alone is NOT enough to run ubt.py.
+pyusb>=1.2
+pyamlboot>=1.0
+# pyamlboot/boot.py uses pkg_resources (removed from setuptools in some envs).
+setuptools>=68

@@ -1,0 +1,127 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Single entrypoint for the smartbox-tools flash workflows. Run from anywhere.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$ROOT"
+
+if [ -f .env ]; then
+  set -a
+  # shellcheck disable=SC1091
+  . ./.env
+  set +a
+fi
+
+usage() {
+  cat <<'EOF'
+Usage: ./smartbox <command> [options]
+
+  check                 Report whether the box is in burn mode 1b8e:c003.
+  flash   --img FILE    Flash a ROM (passes through to ubt/ubt.py).
+                        Uses ROM_IMG from .env when --img is omitted.
+  rescue  --img FILE    Wait for burn mode, then flash with the tested defaults.
+                        Bounded retries (5) for the usual USB dropouts.
+  socid                 Read the SoC ID from a box in burn mode.
+  help                  Show this text.
+
+Run ./setup.sh once first to install the Termux mount helper and dependencies.
+EOF
+}
+
+detect_device() {
+  python3 - <<'PY'
+import sys
+try:
+    import usb.core
+except ImportError:
+    print("ERROR: pyusb not installed (run ./setup.sh --install)", file=sys.stderr)
+    sys.exit(2)
+dev = usb.core.find(idVendor=0x1b8e, idProduct=0xc003)
+print("BURN_MODE_OK" if dev is not None else "NO_DEVICE")
+sys.exit(0 if dev is not None else 1)
+PY
+}
+
+flash_args() {
+  # Build ubt.py arguments: --img from CLI or ROM_IMG, plus pass-through args.
+  local have_img=0 arg
+  for arg in "$@"; do
+    [ "$arg" = "--img" ] && have_img=1
+  done
+  if [ "$have_img" -eq 0 ] && [ -n "${ROM_IMG:-}" ]; then
+    set -- --img "$ROM_IMG" "$@"
+  fi
+  if [ "$#" -eq 0 ]; then
+    echo "ERROR: pass --img FILE or set ROM_IMG in .env" >&2
+    return 2
+  fi
+  (cd ubt && exec python3 ubt.py "$@")
+}
+
+cmd="${1:-help}"
+[ "$#" -gt 0 ] && shift
+
+case "$cmd" in
+  check)
+    detect_device
+    ;;
+  flash)
+    flash_args "$@"
+    ;;
+  rescue)
+    img=""
+    while [ "$#" -gt 0 ]; do
+      case "$1" in
+        --img)
+          img="${2:-}"
+          [ -n "$img" ] || { echo "ERROR: --img needs a path" >&2; exit 2; }
+          shift 2
+          ;;
+        *)
+          echo "Unknown option: $1" >&2
+          usage >&2
+          exit 2
+          ;;
+      esac
+    done
+    [ -n "$img" ] || img="${ROM_IMG:-}"
+    [ -n "$img" ] || { echo "ERROR: pass --img FILE or set ROM_IMG in .env" >&2; exit 2; }
+    echo "WARNING: rescue writes the full ROM to the box. Risks are documented in README.md." >&2
+    attempt=1
+    while [ "$attempt" -le 5 ]; do
+      echo "[$attempt/5] waiting for burn mode 1b8e:c003 (up to 60s)..." >&2
+      waited=0
+      while ! detect_device >/dev/null 2>&1; do
+        waited=$((waited + 2))
+        [ "$waited" -ge 60 ] && break
+        sleep 2
+      done
+      if detect_device >/dev/null 2>&1; then
+        echo "[$attempt/5] device found; flashing..." >&2
+        if flash_args --img "$img" --no-erase-bootloader --reset; then
+          echo "Flash completed." >&2
+          exit 0
+        fi
+        echo "[$attempt/5] flash failed (USB drops are common). Retrying." >&2
+      else
+        echo "[$attempt/5] device not seen. Replug / re-enter burn mode." >&2
+      fi
+      attempt=$((attempt + 1))
+      [ "$attempt" -le 5 ] && sleep 5
+    done
+    echo "ERROR: rescue gave up after 5 attempts." >&2
+    exit 1
+    ;;
+  socid)
+    (cd pyamlboot && exec python3 socid.py "$@")
+    ;;
+  help|--help|-h)
+    usage
+    ;;
+  *)
+    echo "Unknown command: $cmd" >&2
+    usage >&2
+    exit 2
+    ;;
+esac

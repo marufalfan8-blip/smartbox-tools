@@ -46,8 +46,8 @@ jobs:
           # they are research-only and use Android mksh idioms that ShellCheck
           # cannot model.
           mapfile -d '' files < <(
-            git ls-files -z 'termux/*.sh' 'termux/ubuntu' 'chroot/*.sh' 'utgard/*.sh' \
-              ':(exclude)utgard/experiments/*'
+            git ls-files -z 'termux/*.sh' 'termux/ubuntu' 'chroot/*.sh' 'research/utgard/*.sh' \
+              ':(exclude)research/utgard/experiments/*'
           )
           for f in "${files[@]}"; do
             timeout 60 shellcheck -S error "$f"
