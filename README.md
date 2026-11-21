@@ -24,7 +24,9 @@ using the USB OTG port and a Python burn tool running inside a chroot.
 
 ## Quick start (the 4 steps that actually worked)
 
-1. **Enter the chroot on the phone (from Termux):** `./termux/ubuntu`
+1. **Enter the chroot on the phone (from Termux):** copy
+   `termux/chroot-mount.sh` to your Termux home (`$HOME/chroot-mount.sh`), then
+   run `./termux/ubuntu`. Set `CHROOT_DIR` first (see `.env.example`).
 2. **Make sure ADB sees the box first:** `adb devices` must show a `<serial> device`
    entry. If it is empty, the USB node may need a symlink (`/dev/bus/usb/...`
    from the host) or use network ADB: `adb connect <BOX_IP>:5555`.
