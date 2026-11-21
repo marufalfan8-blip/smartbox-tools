@@ -149,7 +149,7 @@ support the box-flashing workflow are kept here.
 
 | File | Purpose | Usage |
 |---|---|---|
-| `chroot-mount-restore.sh` | Re-mount `/proc`, `/sys`, `/tmp` after a reboot (mounts are lost because the service starts via plain `chroot`, not the launcher). Auto-sourced from `~/.bashrc` / `.zshrc`. | `source chroot-mount-restore.sh`, or auto-sourced at login |
+| `chroot-mount-restore.sh` | Re-mount `/proc`, `/sys`, `/tmp` after a reboot (mounts are lost because the service starts via plain `chroot`, not the launcher). | `source chroot-mount-restore.sh`; for auto-mount at login, add `[ -n "$PS1" ] && . /path/to/chroot/chroot-mount-restore.sh` to `~/.bashrc` / `.zshrc` |
 | `dd-throttled.py` | Write an image to SD at 2 MB/s — avoids heat and voltage drops during long `dd` writes. | `DD_SRC=img DD_DST=/dev/block/sdX python3 dd-throttled.py` |
 
 ### `dcow/` — DirtyCow (CVE-2016-5195) research
