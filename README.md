@@ -254,22 +254,23 @@ intentional, not a configurable option.
 
 ## Notes
 
-Device-specific paths have been replaced with environment variables (see `.env.example`).
+### Configuration
+Device-specific paths were replaced with environment variables (see `.env.example`).
 Copy it, adjust the values for your device, and source it before running helpers:
 
 ```bash
 set -a; . ./.env; set +a
 ```
 
-
 `utgard/run.sh` also accepts firmware-specific overrides (`SLOT_PHYS`, `KLN_ADDR`,
 `GW`, `KF`) — see `.env.example`. These are **device/firmware-specific addresses**;
 never guess them on a device you care about.
 
-**If the box never appears as `1b8e:c003`:** you cannot flash with `ubt/`.
-Recheck the OTG cable (data-capable), the ADB connection, and the burn-mode
-entry path in Quick start. On this box, a PC-based Amlogic tool was the fallback
-for a box already on Android 9.
+### If the box never enters burn mode
+If it never appears as `1b8e:c003`, `ubt/` cannot flash it. Recheck the OTG cable
+(data-capable, not charge-only), the ADB connection, and the burn-mode entry path
+in Quick start. On a box already on Android 9, this path was not verified — a
+PC-based Amlogic tool was the fallback.
 
 ## Research status
 
