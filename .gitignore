@@ -14,7 +14,7 @@ __pycache__/
 bash_secret
 hosts.yml
 
-# Local env file (copy of .env.example — may contain firmware addresses / MEGA keys)
+# Local env file (copy of .env.example — may contain firmware-specific addresses)
 .env
 
 # Build outputs from utgard/ and dcow/ Makefiles
