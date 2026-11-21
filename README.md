@@ -268,10 +268,16 @@ set -a; . ./.env; set +a
 never guess them on a device you care about.
 
 ### If the box never enters burn mode
-If it never appears as `1b8e:c003`, `ubt/` cannot flash it. Recheck the OTG cable
-(data-capable, not charge-only), the ADB connection, and the burn-mode entry path
-in Quick start. On a box already on Android 9, this path was not verified — a
-PC-based Amlogic tool was the fallback.
+If the verify command in Quick start step 3 keeps printing `False`, `ubt/` cannot
+flash. Check, in order:
+
+1. **Cable** — USB-A–A must be data-capable (charge-only cables silently fail).
+2. **ADB** — `adb devices` must show `<serial> device`, not `offline`/`authorizing`.
+3. **Entry path** — `adb reboot fastboot` must be sent while the box is still on
+   its original Android 7 (see Quick start step 3).
+
+For a box already on Android 9, this entry path is unverified — see the note in
+Quick start step 3 for the PC-tool fallback.
 
 ## Research status
 
