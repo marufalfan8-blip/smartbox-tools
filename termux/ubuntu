@@ -1,0 +1,16 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# Enter the Ubuntu chroot (set CHROOT_DIR). Type `exit` inside to leave.
+ROOT="${CHROOT_DIR:-/path/to/chroot}"
+MOUNT="${TERMUX_HOME:-/data/data/com.termux/files/home}/chroot-mount.sh"
+BASH=/data/data/com.termux/files/usr/bin/bash
+
+if ! su -c "mountpoint -q $ROOT/proc"; then
+  su -c "$BASH $MOUNT" || { echo "Gagal mount"; exit 1; }
+fi
+
+
+echo ">>> Entering Ubuntu. Type 'exit' to leave."
+su -c "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin HOME=/root PS1='root@ubuntu:\w# ' chroot $ROOT /bin/bash"
+
+su -c "umount -l $ROOT/proc $ROOT/sys $ROOT/dev/pts $ROOT/dev $ROOT/tmp" >/dev/null 2>&1
+echo ">>> Left Ubuntu (unmounted)."

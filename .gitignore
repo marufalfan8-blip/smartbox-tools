@@ -1,0 +1,30 @@
+__pycache__/
+*.py[cod]
+*.log
+*.bak
+*.bak-*
+*.swp
+*.tmp
+.DS_Store
+
+# Secret / credential files — never commit
+*.pem
+*.key
+*.jks
+bash_secret
+hosts.yml
+
+# Local env file (copy of .env.example — may contain firmware addresses / MEGA keys)
+.env
+
+# Build outputs from utgard/ and dcow/ Makefiles
+gpwrite64
+kfunc_new
+kread
+crash_for_core
+gpu_arb_write
+gpu_scan
+dirtycow
+run-as
+libs/
+obj/
