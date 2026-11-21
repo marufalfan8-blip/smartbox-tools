@@ -256,4 +256,8 @@ never guess them on a device you care about.
 - ⚠️ `dcow/`: unsuccessful on this firmware
 
 ## License
-Third-party tools (pyamlboot, DirtyCow, etc.) remain under their respective licenses — see the header of each file.
+This repo is a collection of third-party research tools. Each file keeps its
+original license (SPDX headers where present — mostly GPL-2.0/MIT for the
+SaluteDevices Amlogic tools and Apache-2.0/MIT for pyamlboot). Scripts without
+an explicit header are provided as-is for research; do not assume a single
+license covers the whole repository.
