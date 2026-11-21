@@ -89,7 +89,7 @@ Verified working setup (adjust for your own hardware):
 | Port | USB-A port (on this box, the one near the reset hole) |
 | Cable | **USB-A–A data cable** + OTG adapter on the phone (charge-only cables will fail) |
 | Phone | Rooted Android with **OTG host** support, Termux, and a working USB bind into the chroot |
-| ROM | Matching image in Amlogic `aml_upgrade_package.img` format (ADNL or OPTIMUS — `ubt.py` detects it) |
+| ROM | Matching image in Amlogic `aml_upgrade_package.img` format (ADNL or OPTIMUS — `ubt.py` detects it). Get it from your box manufacturer / a device-specific firmware source — **this repo does not ship ROM files**. |
 | Power | Stable power to the box; do not power-cycle mid-flash |
 | Extras | `pyusb`, `libusb-1.0` in the chroot, `adb`/`fastboot` on the host side |
 
