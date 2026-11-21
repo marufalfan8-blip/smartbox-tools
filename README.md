@@ -128,7 +128,7 @@ an arbitrary physical-memory write primitive. **Not stable** — see Research st
 
 | File | Purpose | Usage |
 |---|---|---|
-| `src/*.c` | C sources: write primitive (`gpwrite*`, `gpu_arb_write*`), syscall helpers (`kfunc`, `kread`), SLOT_PHYS scanners (`gpu_scan*`), ION probes, and `crash_for_core.c` (triggers the core dump that runs the `core_pattern` root helper). | Build with `make` (needs cross compiler) |
+| `src/*.c` | C sources: write primitive (`gpwrite*`, `gpu_arb_write*`), syscall helpers (`kfunc`, `kread`), SLOT_PHYS scanners (`gpu_scan*`), ION probes, and `crash_for_core.c` (triggers the core dump that runs the `core_pattern` root helper). Some files (`gpwrite-ion.c`, `ionprobe*.c`, `gpu_arb_write64.c`, `gpu_scan_slot.c`) are unused research leftovers — not built by the default `Makefile`. | Build with `make` (needs cross compiler) |
 | `run.sh` | Drives the full chain: point syscall slots at `kallsyms_lookup_name`, resolve symbols, patch SELinux, trigger a root helper via `core_pattern`. | `SLOT_PHYS=... KLN_ADDR=... ./run.sh` |
 | `roothelper.sh`, `root_cmd.sh` | Payload run as root after the chain succeeds (scripts), not compiled. | Used by `run.sh` |
 | `experiments/` | Archived SLOT_PHYS scanning experiments (10 scripts, different canary strategies). **Research-only** — not part of the main chain, see `experiments/README.md`. | Reference only; do not run on a device you care about |
@@ -173,6 +173,7 @@ Pure-Python tools that talk to the Amlogic bootROM while the device is in
 | File | Purpose | Usage |
 |---|---|---|
 | `boot.py` | RAM-boot the device: send DDR + U-Boot + image, run temporarily (no eMMC write). Useful for unbricking/exploration. | `python3 boot.py <board> [--board-files DIR] [--image FILE] [--script FILE] [--fdt FILE] [--ramfs FILE] [--timeout MS]` (see `choices` in source for boards) |
+| | **Note:** this folder holds only 2 scripts — the `pyamlboot` Python package itself (`pyamlboot.py`, board `files/`) is imported from the installed distribution, not bundled here. | |
 | `socid.py` | Read the SoC ID / chip identity from the bootROM. | `python3 socid.py` (device must be in burn mode) |
 
 Requires `pyusb` + `libusb-1.0`. **Note:** `boot.py` loads board config files from
