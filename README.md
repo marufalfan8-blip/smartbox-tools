@@ -50,8 +50,9 @@ using the USB OTG port and a Python burn tool running inside a chroot.
    cd ubt && python3 ubt.py --img ROM.img --no-erase-bootloader --reset
    ```
 
-All four steps happen on the phone — no PC. Everything below is detail,
-background, and research notes.
+All four steps happen on the phone — no PC. For the detailed version (tool
+modifications, `ubt.py` options, how the box is prepared), see **Quick usage**
+below. The rest of the README is background and research notes.
 
 > ⚠️ **Before you actually flash:** read the risk warnings in the next section.
 > A wrong ROM or an interrupted flash can permanently brick the box.
@@ -95,7 +96,6 @@ Verified working setup (adjust for your own hardware):
 | Phone | Rooted Android with **OTG host** support, Termux, and a working USB bind into the chroot |
 | ROM | Matching image in Amlogic `aml_upgrade_package.img` format (ADNL or OPTIMUS — `ubt.py` detects it). Get it from your box manufacturer / a device-specific firmware source — **this repo does not ship ROM files**. |
 | Power | Stable power to the box; do not power-cycle mid-flash |
-| Extras | `pyusb`, `libusb-1.0` in the chroot, `adb`/`fastboot` on the host side |
 
 See `.env.example` for the path variables used by the helper scripts.
 
@@ -237,7 +237,8 @@ reset after success.
 ```
 
 ## Dependencies
-Only needed for the tool you actually use — most are optional.
+Software to install (the hardware requirements are in Device requirements above).
+Only what the tool you actually use needs — most are optional.
 
 | Tool | Needs |
 |---|---|
