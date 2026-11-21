@@ -106,8 +106,8 @@ ubt/         USB Burn Tool — the actual ROM flashing tool (main tool)
 pyamlboot/   standalone bootROM tools (RAM-boot, SoC ID)
 utgard/      Utgard LPE root research (Mali-400 GPU write primitive)
 dcow/        DirtyCow CVE-2016-5195 PoC
-chroot/      helpers that run inside the Ubuntu chroot
-termux/      helpers that run on the phone in Termux
+chroot/      scripts that run inside the Ubuntu chroot
+termux/      scripts that run on the phone (Termux)
 ```
 
 See the folder-by-folder guide below for purpose and usage of each.
@@ -191,7 +191,7 @@ the `pyamlboot` Python package resources (`files/` in the installed distribution
 so install pyamlboot itself (`pip install pyamlboot`) rather than running this
 script completely standalone. For a full eMMC flash, use `ubt/` instead — not this folder.
 
-### `termux/` — Android side (Termux)
+### `termux/` — scripts that run on the phone (Termux)
 Scripts run **on the phone, in Termux**, not in the chroot.
 
 | File | Purpose | Usage |
